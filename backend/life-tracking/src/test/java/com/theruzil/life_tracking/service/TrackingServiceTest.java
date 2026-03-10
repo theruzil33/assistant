@@ -1,6 +1,8 @@
 package com.theruzil.life_tracking.service;
 
+import com.theruzil.life_tracking.entity.Task;
 import com.theruzil.life_tracking.entity.Tracking;
+import com.theruzil.life_tracking.repository.TaskRepository;
 import com.theruzil.life_tracking.repository.TrackingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -24,10 +27,14 @@ class TrackingServiceTest {
     @Mock
     private TrackingRepository trackingRepository;
 
+    @Mock
+    private TaskRepository taskRepository;
+
     @InjectMocks
     private TrackingService trackingService;
 
     private Tracking tracking;
+    private Task task;
 
     @BeforeEach
     void setUp() {
@@ -37,6 +44,12 @@ class TrackingServiceTest {
         tracking.setStartDate(LocalDate.of(2026, 4, 1));
         tracking.setEndDate(LocalDate.of(2026, 6, 30));
         tracking.setCreatedAt(LocalDateTime.now());
+
+        task = new Task();
+        task.setId(10L);
+        task.setTitle("Ежедневная пробежка");
+        task.setActive(true);
+        task.setCreatedAt(LocalDateTime.now());
     }
 
     @Test
@@ -130,5 +143,49 @@ class TrackingServiceTest {
         trackingService.delete(1L);
 
         verify(trackingRepository).deleteById(1L);
+    }
+
+    @Test
+    void getTasks_returnsTasksOfTracking() {
+        tracking.getTasks().add(task);
+        when(trackingRepository.findById(1L)).thenReturn(Optional.of(tracking));
+
+        Set<Task> result = trackingService.getTasks(1L);
+
+        assertThat(result).hasSize(1).contains(task);
+    }
+
+    @Test
+    void addTask_existingIds_addsTaskToTracking() {
+        when(trackingRepository.findById(1L)).thenReturn(Optional.of(tracking));
+        when(taskRepository.findById(10L)).thenReturn(Optional.of(task));
+        when(trackingRepository.save(tracking)).thenReturn(tracking);
+
+        Tracking result = trackingService.addTask(1L, 10L);
+
+        assertThat(result.getTasks()).contains(task);
+        verify(trackingRepository).save(tracking);
+    }
+
+    @Test
+    void addTask_taskNotFound_throwsException() {
+        when(trackingRepository.findById(1L)).thenReturn(Optional.of(tracking));
+        when(taskRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> trackingService.addTask(1L, 99L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("99");
+    }
+
+    @Test
+    void removeTask_existingTask_removesFromTracking() {
+        tracking.getTasks().add(task);
+        when(trackingRepository.findById(1L)).thenReturn(Optional.of(tracking));
+        when(trackingRepository.save(tracking)).thenReturn(tracking);
+
+        trackingService.removeTask(1L, 10L);
+
+        assertThat(tracking.getTasks()).doesNotContain(task);
+        verify(trackingRepository).save(tracking);
     }
 }

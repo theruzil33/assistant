@@ -1,5 +1,6 @@
 package com.theruzil.life_tracking.controller;
 
+import com.theruzil.life_tracking.entity.Task;
 import com.theruzil.life_tracking.entity.Tracking;
 import com.theruzil.life_tracking.service.TrackingService;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/trackings")
@@ -40,5 +42,21 @@ public class TrackingController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         trackingService.delete(id);
+    }
+
+    @GetMapping("/{id}/tasks")
+    public Set<Task> getTasks(@PathVariable Long id) {
+        return trackingService.getTasks(id);
+    }
+
+    @PostMapping("/{id}/tasks/{taskId}")
+    public Tracking addTask(@PathVariable Long id, @PathVariable Long taskId) {
+        return trackingService.addTask(id, taskId);
+    }
+
+    @DeleteMapping("/{id}/tasks/{taskId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeTask(@PathVariable Long id, @PathVariable Long taskId) {
+        trackingService.removeTask(id, taskId);
     }
 }
