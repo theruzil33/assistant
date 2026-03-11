@@ -20,3 +20,13 @@ CREATE TABLE IF NOT EXISTS tracking_tasks (
     FOREIGN KEY (tracking_id) REFERENCES trackings (id) ON DELETE CASCADE,
     FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS task_statuses (
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tracking_id BIGINT       NOT NULL,
+    task_id     BIGINT       NOT NULL,
+    status      VARCHAR(50)  NOT NULL,
+    date        DATE         NOT NULL,
+    FOREIGN KEY (tracking_id, task_id) REFERENCES tracking_tasks (tracking_id, task_id) ON DELETE CASCADE,
+    UNIQUE (tracking_id, task_id, date)
+);
