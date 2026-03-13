@@ -34,7 +34,7 @@ export default function TrackingList({ selectedTrackingId, onSelect }: Props) {
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
-    fetch('/api/trackings')
+    fetch('/life-tracking/api/trackings')
       .then((res) => {
         if (!res.ok) throw new Error(`Error: ${res.status}`)
         return res.json()
@@ -47,7 +47,7 @@ export default function TrackingList({ selectedTrackingId, onSelect }: Props) {
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     setSubmitting(true)
-    fetch('/api/trackings', {
+    fetch('/life-tracking/api/trackings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -82,7 +82,7 @@ export default function TrackingList({ selectedTrackingId, onSelect }: Props) {
     if (selected.size === 0) return
     setDeleting(true)
     const deletes = [...selected].map((id) =>
-      fetch(`/api/trackings/${id}`, { method: 'DELETE' }).then((res) => {
+      fetch(`/life-tracking/api/trackings/${id}`, { method: 'DELETE' }).then((res) => {
         if (!res.ok) throw new Error(`Error: ${res.status}`)
         return id
       })

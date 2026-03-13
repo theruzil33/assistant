@@ -27,11 +27,11 @@ export default function TrackingTasksMapping({ trackingId }: Props) {
     setLoading(true)
     setError(null)
     Promise.all([
-      fetch(`/api/trackings/${trackingId}/tasks`).then((res) => {
+      fetch(`/life-tracking/api/trackings/${trackingId}/tasks`).then((res) => {
         if (!res.ok) throw new Error(`Error: ${res.status}`)
         return res.json()
       }),
-      fetch('/api/tasks').then((res) => {
+      fetch('/life-tracking/api/tasks').then((res) => {
         if (!res.ok) throw new Error(`Error: ${res.status}`)
         return res.json()
       }),
@@ -47,7 +47,7 @@ export default function TrackingTasksMapping({ trackingId }: Props) {
 
   function handleAddTask() {
     if (!addTaskId) return
-    fetch(`/api/trackings/${trackingId}/tasks/${addTaskId}`, { method: 'POST' })
+    fetch(`/life-tracking/api/trackings/${trackingId}/tasks/${addTaskId}`, { method: 'POST' })
       .then((res) => {
         if (!res.ok) throw new Error(`Error: ${res.status}`)
         return res.json()
@@ -60,7 +60,7 @@ export default function TrackingTasksMapping({ trackingId }: Props) {
   }
 
   function handleRemoveTask(taskId: number) {
-    fetch(`/api/trackings/${trackingId}/tasks/${taskId}`, { method: 'DELETE' })
+    fetch(`/life-tracking/api/trackings/${trackingId}/tasks/${taskId}`, { method: 'DELETE' })
       .then((res) => {
         if (!res.ok) throw new Error(`Error: ${res.status}`)
         setTrackingTasks((prev) => prev.filter((t) => t.id !== taskId))

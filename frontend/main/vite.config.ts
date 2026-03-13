@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:8080',
+      '/life-tracking': 'http://localhost:8081',
       '/auth': {
         target: 'http://localhost:8081',
         changeOrigin: true,

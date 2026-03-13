@@ -29,7 +29,7 @@ export default function TasksPage() {
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
-    fetch('/api/tasks')
+    fetch('/life-tracking/api/tasks')
       .then((res) => {
         if (!res.ok) throw new Error(`Error: ${res.status}`)
         return res.json()
@@ -42,7 +42,7 @@ export default function TasksPage() {
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     setSubmitting(true)
-    fetch('/api/tasks', {
+    fetch('/life-tracking/api/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, active }),
@@ -72,7 +72,7 @@ export default function TasksPage() {
     if (selected.size === 0) return
     setDeleting(true)
     const deletes = [...selected].map((id) =>
-      fetch(`/api/tasks/${id}`, { method: 'DELETE' }).then((res) => {
+      fetch(`/life-tracking/api/tasks/${id}`, { method: 'DELETE' }).then((res) => {
         if (!res.ok) throw new Error(`Error: ${res.status}`)
         return id
       })
@@ -92,7 +92,7 @@ export default function TasksPage() {
     const updates = tasks
       .filter((t) => selected.has(t.id))
       .map((t) =>
-        fetch(`/api/tasks/${t.id}`, {
+        fetch(`/life-tracking/api/tasks/${t.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...t, active: !t.active }),

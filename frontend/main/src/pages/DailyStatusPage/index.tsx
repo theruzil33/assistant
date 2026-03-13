@@ -40,7 +40,7 @@ export default function DailyStatusPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/trackings')
+    fetch('/life-tracking/api/trackings')
       .then((res) => {
         if (!res.ok) throw new Error(`Error: ${res.status}`)
         return res.json() as Promise<Tracking[]>
@@ -58,7 +58,7 @@ export default function DailyStatusPage() {
     setLoadingTasks(true)
     setError(null)
 
-    fetch(`/api/trackings/${selectedId}/tasks`)
+    fetch(`/life-tracking/api/trackings/${selectedId}/tasks`)
       .then((res) => {
         if (!res.ok) throw new Error(`Error: ${res.status}`)
         return res.json() as Promise<Task[]>
@@ -66,7 +66,7 @@ export default function DailyStatusPage() {
       .then((tasks) =>
         Promise.all(
           tasks.map((task) =>
-            fetch(`/api/task-statuses?trackingId=${selectedId}&taskId=${task.id}`)
+            fetch(`/life-tracking/api/task-statuses?trackingId=${selectedId}&taskId=${task.id}`)
               .then((res) => {
                 if (!res.ok) throw new Error(`Error: ${res.status}`)
                 return res.json() as Promise<{ id: number; date: string }[]>
@@ -102,7 +102,7 @@ export default function DailyStatusPage() {
     const toDelete = rows.filter((r) => !r.checked && r.statusId !== null)
 
     const creates = toCreate.map((r) =>
-      fetch('/api/task-statuses', {
+      fetch('/life-tracking/api/task-statuses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ trackingId: selectedId, taskId: r.id, status: 'DONE', date: today }),
@@ -115,7 +115,7 @@ export default function DailyStatusPage() {
     )
 
     const deletes = toDelete.map((r) =>
-      fetch(`/api/task-statuses/${r.statusId}`, { method: 'DELETE' }).then((res) => {
+      fetch(`/life-tracking/api/task-statuses/${r.statusId}`, { method: 'DELETE' }).then((res) => {
         if (!res.ok) throw new Error(`Error: ${res.status}`)
         return { taskId: r.id }
       })

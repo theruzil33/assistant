@@ -86,7 +86,7 @@ export default function StatsPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/trackings')
+    fetch('/life-tracking/api/trackings')
       .then((res) => {
         if (!res.ok) throw new Error(`Error: ${res.status}`)
         return res.json() as Promise<Tracking[]>
@@ -100,7 +100,7 @@ export default function StatsPage() {
     setLoading(true)
     setError(null)
 
-    fetch(`/api/trackings/${selectedId}/tasks`)
+    fetch(`/life-tracking/api/trackings/${selectedId}/tasks`)
       .then((res) => {
         if (!res.ok) throw new Error(`Error: ${res.status}`)
         return res.json() as Promise<Task[]>
@@ -109,7 +109,7 @@ export default function StatsPage() {
         setTasks(loadedTasks)
         return Promise.all(
           loadedTasks.map((task) =>
-            fetch(`/api/task-statuses?trackingId=${selectedId}&taskId=${task.id}`)
+            fetch(`/life-tracking/api/task-statuses?trackingId=${selectedId}&taskId=${task.id}`)
               .then((res) => {
                 if (!res.ok) throw new Error(`Error: ${res.status}`)
                 return res.json() as Promise<TaskStatus[]>
