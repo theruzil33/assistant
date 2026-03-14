@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import {
-  Actions,
   Button,
-  ClickableId,
   Form,
   Input,
-  Table,
-  TableWrapper,
+  StripId,
+  StripList,
+  StripTitle,
+  TrackingStrip,
 } from './TrackingPage.styles'
 
 interface Tracking {
@@ -99,11 +99,6 @@ export default function TrackingList({ selectedTrackingId, onSelect }: Props) {
       .finally(() => setDeleting(false))
   }
 
-  function formatDate(date: string | null) {
-    if (!date) return '—'
-    return new Date(date).toLocaleDateString()
-  }
-
   function handleClickId(id: number) {
     onSelect(selectedTrackingId === id ? null : id)
   }
@@ -134,53 +129,24 @@ export default function TrackingList({ selectedTrackingId, onSelect }: Props) {
         <Button type="submit" disabled={submitting}>
           {submitting ? 'Creating...' : 'Create'}
         </Button>
+        <Button type="button" onClick={handleDelete} disabled={selected.size === 0 || deleting}>
+          {deleting ? 'Deleting...' : 'Удалить'}
+        </Button>
       </Form>
 
-      <TableWrapper>
-        <Table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>ID</th>
-              <th>Title</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {trackings.map((tracking) => (
-              <tr key={tracking.id}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={selected.has(tracking.id)}
-                    onChange={() => toggleSelect(tracking.id)}
-                  />
-                </td>
-                <td>
-                  <ClickableId
-                    onClick={() => handleClickId(tracking.id)}
-                    style={selectedTrackingId === tracking.id ? { fontWeight: 'bold' } : undefined}
-                  >
-                    {tracking.id}
-                  </ClickableId>
-                </td>
-                <td>{tracking.title}</td>
-                <td>{formatDate(tracking.startDate)}</td>
-                <td>{formatDate(tracking.endDate)}</td>
-                <td>{new Date(tracking.createdAt).toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-
-        <Actions>
-          <Button onClick={handleDelete} disabled={selected.size === 0 || deleting}>
-            {deleting ? 'Deleting...' : 'Удалить'}
-          </Button>
-        </Actions>
-      </TableWrapper>
+      <StripList>
+        {trackings.map((tracking) => (
+          <TrackingStrip key={tracking.id} $selected={selectedTrackingId === tracking.id}>
+            <input
+              type="checkbox"
+              checked={selected.has(tracking.id)}
+              onChange={() => toggleSelect(tracking.id)}
+            />
+            <StripId onClick={() => handleClickId(tracking.id)}>#{tracking.id}</StripId>
+            <StripTitle>{tracking.title}</StripTitle>
+          </TrackingStrip>
+        ))}
+      </StripList>
     </>
   )
 }
